@@ -1,0 +1,10 @@
+.column-setting-title {
+    @include flex(center, space-between);
+    height: 32px;
+}
+
+.tree-list-group {
+    @include size(232px, null);
+    @include flex();
+    flex-direction: column;
+}

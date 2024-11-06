@@ -1,0 +1,25 @@
+.container {
+    @include size(100%);
+    background: $background;
+    position: relative;
+    overflow: auto;
+}
+
+.content-space {
+    @include size(100%);
+    padding: 0 18px;
+
+    .view-container {
+        position: relative;
+
+        .content__view {
+            position: relative;
+        }
+
+        .content__fill {
+            height: 18px;
+        }
+    }
+
+    .back-top {}
+}
