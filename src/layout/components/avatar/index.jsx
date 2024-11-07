@@ -8,12 +8,12 @@ const cx = classNames.bind(styles)
 
 export default defineComponent({
     inheritAttrs: false,
-    setup (props, { attrs }) {
-        function handleLogout () {
+    setup(props, { attrs }) {
+        function handleLogout() {
             attrs.onLogout && attrs.onLogout()
         }
 
-        function getPopupContainer (trigger) {
+        function getPopupContainer(trigger) {
             return trigger.parentNode || document.body
         }
 
@@ -22,9 +22,9 @@ export default defineComponent({
                 default: () => {
                     return (
                         <div class={cx('avatar-center')}>
-                            <Avatar size={28} v-slots={{ icon: () => <UserOutlined/> }}/>
+                            <Avatar size={28} v-slots={{ icon: () => <UserOutlined /> }} />
                             <div class={cx('avatar-center__icon-down')}>
-                                <CaretDownOutlined/>
+                                <CaretDownOutlined />
                             </div>
                         </div>
                     )
@@ -32,7 +32,7 @@ export default defineComponent({
                 overlay: () => {
                     return (
                         <Menu class={cx('avatar-menu')} selectedKeys={[]}>
-                            <Menu.Item key={'center'} v-slots={{
+                            {/* <Menu.Item key={'center'} v-slots={{
                                 default: () => '个人中心',
                                 icon: () => <UserOutlined/>
                             }}/>
@@ -40,11 +40,11 @@ export default defineComponent({
                                 default: () => '个人设置',
                                 icon: () => <SettingOutlined/>
                             }}/>
-                            <Menu.Divider/>
+                            <Menu.Divider/> */}
                             <Menu.Item key={'logout'} onClick={handleLogout} v-slots={{
                                 default: () => '退出登录',
-                                icon: () => <LoginOutlined/>
-                            }}/>
+                                icon: () => <LoginOutlined />
+                            }} />
                         </Menu>
                     )
                 }

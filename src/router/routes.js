@@ -33,7 +33,7 @@ const routes = [
         component: Layout,
         children: [
             {
-                path: 'index',
+                path: '/index',
                 name: 'HomeIndex',
                 component: () => import('@/views/Home.vue'),
                 meta: {
@@ -45,14 +45,14 @@ const routes = [
     {
         path: '/infoManagement',
         name: 'infoManagement',
-        redirect: { name: 'walnut' },
+        redirect: { name: 'infoManagement' },
         meta: {
             title: '信息录入'
         },
         component: Layout,
         children: [
             {
-                path: 'driver',
+                path: '/driver',
                 name: 'driver',
                 component: () => import('@/views/infoManagement/driver/index.vue'),
                 meta: {
@@ -60,7 +60,7 @@ const routes = [
                 }
             },
             {
-                path: 'dispatcher',
+                path: '/dispatcher',
                 name: 'dispatcher',
                 component: () => import('@/views/infoManagement/dispatcher/index.vue'),
                 meta: {
@@ -71,52 +71,6 @@ const routes = [
                 ]
         
             },
-            {
-                path: '/batch/detail',
-                name: 'batchDetail',
-                component: () => import('@/views/selfOperated/Batch/detailList.vue'),
-                meta: {
-                    hideInMenu: true,
-                    title: '批次详情'
-                }
-            },
-            {
-                path: '/walnut/pair',
-                name: 'pair',
-                component: () => import('@/views/selfOperated/Walnut/pair.vue'),
-                meta: {
-                    hideInMenu: true,
-                    title: '配对详情'
-                }
-            },
-            {
-                path: '/walnut/result',
-                name: 'result',
-                component: () => import('@/views/selfOperated/Walnut/pair.vue'),
-                meta: {
-                    hideInMenu: true,
-                    title: '匹配结果'
-                }
-            },
-            {
-                path: '/walnut/create',
-                name: 'walnutCreate',
-                component: () => import('@/views/selfOperated/Walnut/create.vue'),
-                meta: {
-                    hideInMenu: true,
-                    title: '新建核桃'
-                }
-            },
-            {
-                path: '/walnut/detail',
-                name: 'walnutDetail',
-                component: () => import('@/views/selfOperated/Walnut/detail.vue'),
-                meta: {
-                    hideInMenu: true,
-                    title: '核桃详情'
-                }
-            },
-      
  
         ]
     },
@@ -124,7 +78,7 @@ const routes = [
     {
         path: '/driverPassengerManagement',
         name: 'driverPassengerManagement',
-        redirect: { name: 'FormLayout' },
+        redirect: { name: 'driverPassengerManagement' },
         meta: {
             title: '司乘管理'
         },
@@ -139,16 +93,7 @@ const routes = [
                     title: '运营线路'
                 }
             },
-      
- 
-            // {
-            //     path: '/priceSetting',
-            //     name: 'PriceSetting',
-            //     component: () => import('@/views/driverPassengerManagement/priceSetting/index.vue'),
-            //     meta: {
-            //         title: '价格设置'
-            //     }
-            // },
+          
             {
                 path: '/driverOrder',
                 name: 'DriverOrder',
@@ -187,7 +132,7 @@ const routes = [
         children: [
    
             {
-                path: 'settlement',
+                path: '/settlement',
                 name: 'Settlement',
                 component: () => import('@/views/financialManagement/Settlement/index.vue'),
                 meta: {
@@ -197,7 +142,7 @@ const routes = [
       
  
             {
-                path: 'invoice',
+                path: '/invoice',
                 name: 'Invoice',
                 component: () => import('@/views/financialManagement/Invoice/index.vue'),
                 meta: {
@@ -206,60 +151,7 @@ const routes = [
             },
         ]
     },
-    // {
-    //     path: '/table',
-    //     name: 'Table',
-    //     redirect: { name: 'TableIndex' },
-    //     meta: {
-    //         title: '表格'
-    //     },
-    //     component: Layout,
-    //     children: [
-    //         {
-    //             path: 'index',
-    //             name: 'TableIndex',
-    //             component: () => import('@/views/table/index'),
-    //             meta: {
-    //                 title: '表格'
-    //             }
-    //         },
-    //         {
-    //             path: 'custom-search',
-    //             name: 'TableCustomSearch',
-    //             component: () => import('@/views/table/CustomSearch'),
-    //             meta: {
-    //                 title: '自定义搜索'
-    //             }
-    //         },
-    //         {
-    //             path: 'editable-table',
-    //             name: 'TableEditableTable',
-    //             component: () => import('@/views/table/EditableTable'),
-    //             meta: {
-    //                 title: '可编辑表格'
-    //             }
-    //         }
-    //     ]
-    // },
-    // {
-    //     path: '/test',
-    //     name: 'Test',
-    //     redirect: { name: 'TestIndex' },
-    //     meta: {
-    //         title: '测试'
-    //     },
-    //     component: Layout,
-    //     children: [
-    //         {
-    //             path: 'index',
-    //             name: 'TestIndex',
-    //             component: () => import('@/views/Test'),
-    //             meta: {
-    //                 title: '测试'
-    //             }
-    //         }
-    //     ]
-    // },
+   
     {
         path: '/401',
         name: 'error-401',

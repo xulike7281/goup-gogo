@@ -47,26 +47,26 @@ const router = useRouter()
 
 const toolCards = ref([
   {
-    label: '核桃管理', //艺人管理
-    path: '/selfOperated/walnut',
+    label: '司机订单', //
+    path: '/driverOrder',
     color: '#ff9c6e',
     bg: 'rgba(255, 156, 110,.3)'
   },
   {
-    label: '批次管理', //专辑管理
-    path: '/selfOperated/batch',
+    label: '乘客订单', //
+    path: '/userOrder',
     color: '#69c0ff',
     bg: 'rgba(105, 192, 255,.3)'
   },
   {
-    label: '算法管理', //歌曲管理
-    path: '/commonConfig/algorithm',
+    label: '对账结算', //
+    path: '/settlement',
     color: '#b37feb',
     bg: 'rgba(179, 127, 235,.3)'
   },
   {
-    label: '相机配置', //合同管理
-    path: '/commonConfig/camera',
+    label: '发票管理', //
+    path: '/invoice',
     color: '#ffd666',
     bg: 'rgba(255, 214, 102,.3)'
   },
