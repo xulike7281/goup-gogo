@@ -7,7 +7,7 @@
           <a-input v-model:value="searchFormState.name" allowClear placeholder="姓名" />
         </a-form-item>
         <a-form-item label="手机号" name="cellphone">
-          <a-input v-model:value="searchFormState.phone" allowClear placeholder="手机号" />
+          <a-input v-model:value="searchFormState.cellphone" allowClear placeholder="手机号" />
         </a-form-item>
         <a-form-item label="车牌号" name="plateNumber">
           <a-input v-model:value="searchFormState.plateNumber" allowClear placeholder="车牌号" />
@@ -50,10 +50,10 @@
             <a-input v-model:value="formState.name" placeholder="姓名" />
           </a-form-item>
           <a-form-item label="手机号" name="cellphone">
-            <a-input v-model:value="formState.name" placeholder="手机号" />
+            <a-input v-model:value="formState.cellphone" placeholder="手机号" />
           </a-form-item>
           <a-form-item label="身份证号" name="idCard">
-            <a-input v-model:value="formState.name" placeholder="身份证号" />
+            <a-input v-model:value="formState.idCard" placeholder="身份证号" />
           </a-form-item>
           <a-form-item label="身份证正面" name="idCardFront">
             <a-upload v-model:file-list="idCardFrontFileList" :maxCount="1" list-type="picture"
@@ -64,26 +64,27 @@
               </a-button>
             </a-upload>
           </a-form-item>
-          <a-form-item label="身份证反面" name="name" class="vertical-form-item">
-            <a-upload v-model:file-list="fileList" action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              list-type="picture">
+          <a-form-item label="身份证反面" name="idCardBack" class="vertical-form-item">
+            <a-upload v-model:file-list="idCardBackFileList" :maxCount="1" list-type="picture"
+              :before-upload="idCardBackUpload" @change="idCardBackUploadChange">
               <a-button>
                 <upload-outlined></upload-outlined>
                 点击上传
               </a-button>
             </a-upload>
           </a-form-item>
-          <a-form-item label="驾驶证" name="name" class="vertical-form-item">
-            <a-upload v-model:file-list="fileList" action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              list-type="picture">
+          <a-form-item label="驾驶证" name="licencePhoto" class="vertical-form-item">
+            <a-upload v-model:file-list="licencePhotoFileList" :maxCount="1" list-type="picture"
+              :before-upload="licencePhotoUpload" @change="licencePhotoUploadChange">
               <a-button>
                 <upload-outlined></upload-outlined>
                 点击上传
               </a-button>
             </a-upload>
           </a-form-item>
-          <a-form-item label="网约车资格证" name="name" class="vertical-form-item">
-            <a-upload v-model:file-list="fileList" list-type=" picture">
+          <a-form-item label="网约车资格证" name="netLicencePhoto" class="vertical-form-item">
+            <a-upload v-model:file-list="netLicencePhotoFileList" :maxCount="1" list-type="picture"
+              :before-upload="netLicencePhotoUpload" @change="netLicencePhotoUploadChange">
               <a-button>
                 <upload-outlined></upload-outlined>
                 点击上传
@@ -92,42 +93,42 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="车牌号" name="name">
-            <a-input v-model:value="formState.name" placeholder="手机号" />
+          <a-form-item label="车牌号" name="plateNumber">
+            <a-input v-model:value="formState.plateNumber" placeholder="车牌号" />
           </a-form-item>
-          <a-form-item label="车辆品牌" name="name">
-            <a-input v-model:value="formState.name" placeholder="手机号" />
+          <a-form-item label="车辆品牌" name="carBrand">
+            <a-input v-model:value="formState.carBrand" placeholder="车辆品牌" />
           </a-form-item>
-          <a-form-item label="车型" name="name">
-            <a-input v-model:value="formState.name" placeholder="手机号" />
+          <a-form-item label="车型" name="carModel">
+            <a-input v-model:value="formState.carModel" placeholder="车型" />
           </a-form-item>
-          <a-form-item label="颜色" name="name">
-            <a-input v-model:value="formState.name" placeholder="手机号" />
+          <a-form-item label="车辆颜色" name="carColor">
+            <a-input v-model:value="formState.carColor" placeholder="车辆颜色" />
           </a-form-item>
-          <a-form-item label="准乘人数" name="name">
-            <a-input v-model:value="formState.name" placeholder="手机号" />
+          <a-form-item label="准乘人数" name="seats">
+            <a-input v-model:value="formState.seats" placeholder="准乘人数" />
           </a-form-item>
-          <a-form-item label="行驶本" name="name" class="vertical-form-item">
-            <a-upload v-model:file-list="fileList" action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              list-type="picture">
+          <a-form-item label="行驶本" name="driveLicensePhoto" class="vertical-form-item">
+            <a-upload v-model:file-list="driveLicensePhotoFileList" :maxCount="1" list-type="picture"
+              :before-upload="driveLicensePhotoUpload" @change="driveLicensePhotoUploadChange">
               <a-button>
                 <upload-outlined></upload-outlined>
                 点击上传
               </a-button>
             </a-upload>
           </a-form-item>
-          <a-form-item label="保险单" name="name" class="vertical-form-item">
-            <a-upload v-model:file-list="fileList" action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              list-type="picture">
+          <a-form-item label="保险单" name="insurancePhoto" class="vertical-form-item">
+            <a-upload v-model:file-list="insurancePhotoFileList" :maxCount="1" list-type="picture"
+              :before-upload="insurancePhotoUpload" @change="insurancePhotoUploadChange">
               <a-button>
                 <upload-outlined></upload-outlined>
                 点击上传
               </a-button>
             </a-upload>
           </a-form-item>
-          <a-form-item label="网约车运输证" name="name" class="vertical-form-item">
-            <a-upload v-model:file-list="fileList" action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              list-type="picture">
+          <a-form-item label="网约车运输证" name="roadPermitPhoto" class="vertical-form-item">
+            <a-upload v-model:file-list="roadPermitPhotoFileList" :maxCount="1" list-type="picture"
+              :before-upload="roadPermitPhotoUpload" @change="roadPermitPhotoUploadChange">
               <a-button>
                 <upload-outlined></upload-outlined>
                 点击上传
@@ -142,7 +143,6 @@
 </template>
 
 <script setup>
-import gpMap from '@/components/gpMap/index.vue'
 import { onMounted, ref, reactive, toRaw } from 'vue';
 import * as api from '@/common/index'
 import { message } from 'ant-design-vue';
@@ -167,11 +167,18 @@ const wrapperCol = {
   span: 18,
 };
 const idCardFrontFileList = ref([])
+const idCardBackFileList = ref([])
+const licencePhotoFileList = ref([])
+const netLicencePhotoFileList = ref([])
+const driveLicensePhotoFileList = ref([])
+const insurancePhotoFileList = ref([])
+const roadPermitPhotoFileList = ref([])
 const searchFormState = ref({
   name: '',// 姓名
   cellphone: '',// 手机号
   plateNumber: ''// 车牌号
 });
+
 const formState = ref({
   name: '',// 司机姓名
   cellphone: '',// 手机号
@@ -180,18 +187,16 @@ const formState = ref({
   idCardBack: '',// 身份证反面
   licencePhoto: '',// 驾驶证
   netLicencePhoto: '', //网约车资格证(图片地址)
-  carBrand: '', //车辆品牌
-  carColor: '', //车辆颜色
-  carModel: '', //车辆型号
-  carModel: '', //车辆品牌
   plateNumber: '', //车牌号
+  carBrand: '', //车辆品牌
+  carModel: '', //车辆型号
+  carColor: '', //车辆颜色
+  seats: '', // 人数
   driveLicensePhoto: '', //行驶本
   id: '', //车辆id(修改必填) 
   insurancePhoto: '', //保险单(图片地址) ,
   roadPermitPhoto: '', // 网约车运输证(图片地址)
-  seats: '', // 人数
 });
-
 const rules = {
   name: [
     {
@@ -204,45 +209,103 @@ const rules = {
     {
       required: true,
       message: '请填写手机号',
-      trigger: 'change',
+      trigger: 'blur',
     },
   ],
   idCard: [
     {
       required: true,
       message: '请填写身份证号',
-      trigger: 'change',
+      trigger: 'blur',
     },
   ],
   idCardFront: [
     {
       required: true,
       message: '请上传身份证正面照片',
-      trigger: 'change',
+      trigger: 'blur',
     },
   ],
   idCardBack: [
     {
       required: true,
       message: '请上传身份证反面照片',
-      trigger: 'change',
+      trigger: 'blur',
     },
   ],
   licencePhoto: [
     {
       required: true,
       message: '请上传驾驶证照片',
-      trigger: 'change',
+      trigger: 'blur',
     },
   ],
   netLicencePhoto: [
     {
       required: true,
       message: '请上传网约车资格证照片',
-      trigger: 'change',
+      trigger: 'blur',
+    },
+  ],
+  plateNumber: [
+    {
+      required: true,
+      message: '请填写车牌号',
+      trigger: 'blur',
+    },
+  ],
+  carBrand: [
+    {
+      required: true,
+      message: '请填写车辆品牌',
+      trigger: 'blur',
+    },
+  ],
+  carModel: [
+    {
+      required: true,
+      message: '请填写车辆型号',
+      trigger: 'blur',
+    },
+  ],
+  carColor: [
+    {
+      required: true,
+      message: '请填写车辆颜色',
+      trigger: 'blur',
+    },
+  ],
+  seats: [
+    {
+      required: true,
+      message: '请填写准乘人数',
+      trigger: 'blur',
+    },
+  ],
+  driveLicensePhoto: [
+    {
+      required: true,
+      message: '请上传行驶本照片',
+      trigger: 'blur',
+    },
+  ],
+  insurancePhoto: [
+    {
+      required: true,
+      message: '请上传保险单照片',
+      trigger: 'blur',
+    },
+  ],
+  roadPermitPhoto: [
+    {
+      required: true,
+      message: '请上传网约车运输证照片',
+      trigger: 'blur',
     },
   ],
 };
+
+
 const columns = [
   {
     title: 'id',
@@ -301,6 +364,96 @@ const idCardFrontUploadChange = (files) => {
     formState.value.idCardFront = ''
   }
 }
+const idCardBackUpload = (file) => {
+  uploadImg('idCardFront', file).then(res => {
+    console.log('res222: ', res);
+    if (res.code == 200) {
+      formState.value.idCardBack = res.data
+    }
+  })
+  return false
+}
+const idCardBackUploadChange = (files) => {
+  console.log('idCardFrontUploadChange: ', files);
+  if (!files.fileList.length) {
+    formState.value.idCardBack = ''
+  }
+}
+const licencePhotoUpload = (file) => {
+  uploadImg('idCardFront', file).then(res => {
+    console.log('res222: ', res);
+    if (res.code == 200) {
+      formState.value.licencePhoto = res.data
+    }
+  })
+  return false
+}
+const licencePhotoUploadChange = (files) => {
+  console.log('idCardFrontUploadChange: ', files);
+  if (!files.fileList.length) {
+    formState.value.licencePhoto = ''
+  }
+}
+const netLicencePhotoUpload = (file) => {
+  uploadImg('idCardFront', file).then(res => {
+    console.log('res222: ', res);
+    if (res.code == 200) {
+      formState.value.netLicencePhoto = res.data
+    }
+  })
+  return false
+}
+const netLicencePhotoUploadChange = (files) => {
+  console.log('idCardFrontUploadChange: ', files);
+  if (!files.fileList.length) {
+    formState.value.netLicencePhoto = ''
+  }
+}
+const driveLicensePhotoUpload = (file) => {
+  uploadImg('idCardFront', file).then(res => {
+    console.log('res222: ', res);
+    if (res.code == 200) {
+      formState.value.driveLicensePhoto = res.data
+    }
+  })
+  return false
+}
+const driveLicensePhotoUploadChange = (files) => {
+  console.log('idCardFrontUploadChange: ', files);
+  if (!files.fileList.length) {
+    formState.value.driveLicensePhoto = ''
+  }
+}
+const insurancePhotoUpload = (file) => {
+  uploadImg('idCardFront', file).then(res => {
+    console.log('res222: ', res);
+    if (res.code == 200) {
+      formState.value.insurancePhoto = res.data
+    }
+  })
+  return false
+}
+const insurancePhotoUploadChange = (files) => {
+  console.log('idCardFrontUploadChange: ', files);
+  if (!files.fileList.length) {
+    formState.value.insurancePhoto = ''
+  }
+}
+const roadPermitPhotoUpload = (file) => {
+  uploadImg('idCardFront', file).then(res => {
+    console.log('res222: ', res);
+    if (res.code == 200) {
+      formState.value.roadPermitPhoto = res.data
+    }
+  })
+  return false
+}
+const roadPermitPhotoUploadChange = (files) => {
+  console.log('idCardFrontUploadChange: ', files);
+  if (!files.fileList.length) {
+    formState.value.roadPermitPhoto = ''
+  }
+}
 const getData = () => {
   api.getDriverList({
     currentPage: currentPage.value,
@@ -340,23 +493,38 @@ const showModal = () => {
 };
 const handleOk = e => {
   console.log(e);
-
   formRef.value.validate().then(() => {
-
-    let fn = isEdit.value ? 'mdCategory' : 'addCategory'
-    let data = {
-      name: formState.name,
-      remark: formState.remark
+    let fn = isEdit.value ? 'editDriver' : 'addDriver'
+    let driverInfoDTO = {
+      "cellphone": formState.value.cellphone,
+      "idCard": formState.value.idCard,
+      "idCardBack": formState.value.idCardBack,
+      "idCardFront": formState.value.idCardFront,
+      "licencePhoto": formState.value.licencePhoto,
+      "name": formState.value.name,
+      "netLicencePhoto": formState.value.netLicencePhoto
+    }
+    let carInfoDTO = {
+      "carBrand": formState.value.carBrand,
+      "carColor": formState.value.carColor,
+      "carModel": formState.value.carModel,
+      "driveLicensePhoto": formState.value.driveLicensePhoto,
+      "insurancePhoto": formState.value.insurancePhoto,
+      "plateNumber": formState.value.plateNumber,
+      "roadPermitPhoto": formState.value.roadPermitPhoto,
+      "seats": formState.value.seats
     }
     if (isEdit.value) {
-      data.id = currentId.value
+      driverInfoDTO.id = currentId.value
     }
 
+    console.log('fn: ', fn);
     api[fn]({
-      ...data
+      driverInfoDTO,
+      carInfoDTO
     }).then(res => {
       console.log('[ res ]-188', res);
-      if (res.code == '0')
+      if (res.code == 200)
 
         message.success(`${isEdit.value ? '修改成功' : '新建成功'}`);
       resetForm()
@@ -380,7 +548,7 @@ const handleCancel = () => {
 const uploadImg = (name, file) => {
   console.log('fileList222 ', file);
   const formData = new FormData();
-  formData.append('photo', file, name);
+  formData.append('photo', file, file.name);
   console.log('[ formData ]-59', formData);
   return api.uploadImg(
     formData,
@@ -399,7 +567,7 @@ const handleDel = (row) => {
   console.log('[ row ]-243', row);
   api.delCategory({ id: row.id }).then(res => {
     console.log('[ res ]-245', res);
-    if (res.code == '0') {
+    if (res.code == 200) {
       message.success(`删除成功`);
       getData()
     }
@@ -407,8 +575,51 @@ const handleDel = (row) => {
 }
 const modifyData = (row) => {
   console.log('[ row ]-300', row);
-  formState.name = row.name
-  formState.remark = row.remark
+  let driverInfoDTO = {
+    "cellphone": formState.value.cellphone,
+    "idCard": formState.value.idCard,
+    "idCardBack": formState.value.idCardBack,
+    "idCardFront": formState.value.idCardFront,
+    "licencePhoto": formState.value.licencePhoto,
+    "name": formState.value.name,
+    "netLicencePhoto": formState.value.netLicencePhoto
+  }
+  let carInfoDTO = {
+    "carBrand": formState.value.carBrand,
+    "carColor": formState.value.carColor,
+    "carModel": formState.value.carModel,
+    "driveLicensePhoto": formState.value.driveLicensePhoto,
+    "insurancePhoto": formState.value.insurancePhoto,
+    "plateNumber": formState.value.plateNumber,
+    "roadPermitPhoto": formState.value.roadPermitPhoto,
+    "seats": formState.value.seats
+  }
+  formState.value.name = row.name
+  formState.value.cellphone = row.cellphone
+  formState.value.idCard = row.idCard
+  formState.value.idCardBack = row.idCardBack
+  formState.value.idCardFront = row.idCardFront
+  formState.value.licencePhoto = row.licencePhoto
+  formState.value.netLicencePhoto = row.netLicencePhoto
+
+  formState.value.carBrand = row.carBrand
+  formState.value.carColor = row.carColor
+  formState.value.carModel = row.carModel
+  formState.value.plateNumber = row.plateNumber
+  formState.value.seats = row.seats
+  formState.value.driveLicensePhoto = row.driveLicensePhoto
+  formState.value.insurancePhoto = row.insurancePhoto
+  formState.value.roadPermitPhoto = row.roadPermitPhoto
+
+  idCardFrontFileList.value = [{ url: row.idCardFront }]
+  idCardBackFileList.value = [{ url: row.idCardBack }]
+  licencePhotoFileList.value = [{ url: row.licencePhoto }]
+  netLicencePhotoFileList.value = [{ url: row.netLicencePhoto }]
+
+  driveLicensePhotoFileList.value = [{ url: row.driveLicensePhoto }]
+  insurancePhotoFileList.value = [{ url: row.insurancePhoto }]
+  roadPermitPhotoFileList.value = [{ url: row.roadPermitPhoto }]
+
   isEdit.value = true
   currentId.value = row.id
   openAddModal.value = true

@@ -17,6 +17,7 @@ const getSiteList = (data,headers) => Post(`${baseUrl}/goupCarpoolSupplierApi/si
 const getLineList = (data,headers) => Post(`${baseUrl}/goupCarpoolSupplierApi/line/product/getLineProductList`, data,headers)
 
 
+const editDriver = (data,headers) => Post(`${baseUrl}/goupCarpoolSupplierApi/driver/editDriver`, data,headers)
 const addDriver = (data,headers) => Post(`${baseUrl}/goupCarpoolSupplierApi/driver/addDriver`, data,headers)
 
 const getDriverList = (data,headers) => Post(`${baseUrl}/goupCarpoolSupplierApi/driver/getDriverList`, data,headers)
@@ -93,6 +94,7 @@ export {
     getSiteList,
     getLineList,
     addDriver,
+    editDriver,
     getDriverList,
     getDriverOrder,
     // getOrder,
