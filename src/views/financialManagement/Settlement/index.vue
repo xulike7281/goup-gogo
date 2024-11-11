@@ -2,19 +2,21 @@
 
   <a-card>
     <a-space class="row cen-space">
-      <a-form :model="formState" name="horizontal_login" layout="inline" autocomplete="off" @finish="onFinish"
-        @finishFailed="onFinishFailed">
-        <a-form-item label="编号" name="username">
+      <a-form :model="formState" class="row" style="gap: 20px;" name="horizontal_login" layout="inline"
+        autocomplete="off" @finish="getData">
+        <a-form-item label="司机编号" name="username">
           <a-input v-model:value="formState.name" placeholder="司机编号" />
         </a-form-item>
-        <a-form-item label="姓名" name="password">
-          <a-input v-model:value="formState.name" placeholder="司机姓名" />
+        <a-form-item label="司机姓名" name="password">
+          <a-input v-model:value="formState.name" placeholder="姓名" />
         </a-form-item>
-        <a-form-item label="手机号" name="password">
-          <a-input v-model:value="formState.name" placeholder="司机手机号" />
+        <a-form-item label="司机手机号" name="password">
+          <a-input v-model:value="formState.name" placeholder="发票抬头" />
         </a-form-item>
+
+
         <a-form-item>
-          <a-button :disabled="disabled" type="primary" html-type="submit">搜索</a-button>
+          <a-button type="primary" html-type="submit">搜索</a-button>
         </a-form-item>
       </a-form>
 
@@ -293,12 +295,12 @@ const resetForm = () => {
   formRef.value.resetFields();
 };
 const getData = () => {
-  api.getAlgorithm({
+  api.getInvoiceList({
     pageNum: 1,
     pageSize: 20,
     name: ruleName.value
   }).then(res => {
-    if (res.code == "0") {
+    if (res.code == 200) {
       data.value = res.data.list
     } else {
       message.error('请求失败');
@@ -308,15 +310,7 @@ const getData = () => {
 }
 onMounted(() => {
   getData()
-  // api.getCommonOptions({
-  //   typeCode: 'category_task_status',
-  // }).then(res => {
-  //   console.log('[ res ]-17', res);
-  //   if (res.code == "0") {
 
-  //     data.value = res.data.list
-  //   }
-  // })
 
 })
 const showModal = () => {

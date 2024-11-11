@@ -52,7 +52,7 @@ export default defineComponent({
         const rules = {
             phone: [{
                 required: true,
-                message: '账号不能为空'
+                message: '手机号不能为空'
             }],
             password: [{
                 required: true,

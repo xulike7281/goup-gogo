@@ -25,9 +25,9 @@
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'action'">
           <a-button type="link" size="small" @click="modifyData(record)"> 修改</a-button>
-          <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="handleDel(record)">
+          <!-- <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="handleDel(record)">
             <a-button type="link" size="small"> 删除</a-button>
-          </a-popconfirm>
+          </a-popconfirm> -->
         </template>
       </template>
 
@@ -148,7 +148,7 @@ import * as api from '@/common/index'
 import { message } from 'ant-design-vue';
 import { useRoute, useRouter } from 'vue-router';
 import { UploadOutlined } from '@ant-design/icons-vue'
-import { get } from 'lodash-es';
+
 const router = useRouter()
 const env = import.meta.env
 const openAddModal = ref(false);
@@ -513,9 +513,11 @@ const handleOk = e => {
       "plateNumber": formState.value.plateNumber,
       "roadPermitPhoto": formState.value.roadPermitPhoto,
       "seats": formState.value.seats
+
     }
     if (isEdit.value) {
       driverInfoDTO.id = currentId.value
+      carInfoDTO.id = formState.value.carId
     }
 
     console.log('fn: ', fn);
@@ -575,50 +577,47 @@ const handleDel = (row) => {
 }
 const modifyData = (row) => {
   console.log('[ row ]-300', row);
-  let driverInfoDTO = {
-    "cellphone": formState.value.cellphone,
-    "idCard": formState.value.idCard,
-    "idCardBack": formState.value.idCardBack,
-    "idCardFront": formState.value.idCardFront,
-    "licencePhoto": formState.value.licencePhoto,
-    "name": formState.value.name,
-    "netLicencePhoto": formState.value.netLicencePhoto
-  }
-  let carInfoDTO = {
-    "carBrand": formState.value.carBrand,
-    "carColor": formState.value.carColor,
-    "carModel": formState.value.carModel,
-    "driveLicensePhoto": formState.value.driveLicensePhoto,
-    "insurancePhoto": formState.value.insurancePhoto,
-    "plateNumber": formState.value.plateNumber,
-    "roadPermitPhoto": formState.value.roadPermitPhoto,
-    "seats": formState.value.seats
-  }
-  formState.value.name = row.name
-  formState.value.cellphone = row.cellphone
-  formState.value.idCard = row.idCard
-  formState.value.idCardBack = row.idCardBack
-  formState.value.idCardFront = row.idCardFront
-  formState.value.licencePhoto = row.licencePhoto
-  formState.value.netLicencePhoto = row.netLicencePhoto
+  api.getDriver({ id: row.id }).then(res => {
+    console.log('res: ', res);
+    if (res.code == 200) {
 
-  formState.value.carBrand = row.carBrand
-  formState.value.carColor = row.carColor
-  formState.value.carModel = row.carModel
-  formState.value.plateNumber = row.plateNumber
-  formState.value.seats = row.seats
-  formState.value.driveLicensePhoto = row.driveLicensePhoto
-  formState.value.insurancePhoto = row.insurancePhoto
-  formState.value.roadPermitPhoto = row.roadPermitPhoto
+      const { driverCarInfoRsp, driverInfoRsp } = res.data
+      formState.value.name = driverInfoRsp.name
+      formState.value.cellphone = driverInfoRsp.cellphone
+      formState.value.idCard = driverInfoRsp.idCard
+      formState.value.idCardBack = driverInfoRsp.idCardBack
+      formState.value.idCardFront = driverInfoRsp.idCardFront
+      formState.value.licencePhoto = driverInfoRsp.licencePhoto
+      formState.value.netLicencePhoto = driverInfoRsp.netLicencePhoto
 
-  idCardFrontFileList.value = [{ url: row.idCardFront }]
-  idCardBackFileList.value = [{ url: row.idCardBack }]
-  licencePhotoFileList.value = [{ url: row.licencePhoto }]
-  netLicencePhotoFileList.value = [{ url: row.netLicencePhoto }]
+      formState.value.carBrand = driverCarInfoRsp.carBrand
+      formState.value.carColor = driverCarInfoRsp.carColor
+      formState.value.carModel = driverCarInfoRsp.carModel
+      formState.value.plateNumber = driverCarInfoRsp.plateNumber
+      formState.value.seats = driverCarInfoRsp.seats
+      formState.value.driveLicensePhoto = driverCarInfoRsp.driveLicensePhoto
+      formState.value.insurancePhoto = driverCarInfoRsp.insurancePhoto
+      formState.value.roadPermitPhoto = driverCarInfoRsp.roadPermitPhoto
+      formState.value.carId = driverCarInfoRsp.id
 
-  driveLicensePhotoFileList.value = [{ url: row.driveLicensePhoto }]
-  insurancePhotoFileList.value = [{ url: row.insurancePhoto }]
-  roadPermitPhotoFileList.value = [{ url: row.roadPermitPhoto }]
+      idCardFrontFileList.value = [{ url: driverInfoRsp.idCardFront }]
+      idCardBackFileList.value = [{ url: driverInfoRsp.idCardBack }]
+      licencePhotoFileList.value = [{ url: driverInfoRsp.licencePhoto }]
+      netLicencePhotoFileList.value = [{ url: driverInfoRsp.netLicencePhoto }]
+
+      driveLicensePhotoFileList.value = [{ url: driverCarInfoRsp.driveLicensePhoto }]
+      insurancePhotoFileList.value = [{ url: driverCarInfoRsp.insurancePhoto }]
+      roadPermitPhotoFileList.value = [{ url: driverCarInfoRsp.roadPermitPhoto }]
+
+    }
+
+  })
+
+
+
+
+
+
 
   isEdit.value = true
   currentId.value = row.id

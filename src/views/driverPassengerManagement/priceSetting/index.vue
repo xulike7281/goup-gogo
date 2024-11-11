@@ -1,414 +1,462 @@
 <template>
-  <div class="home">
-    <a-row>
-      <!-- <a-col :span="12"> -->
-        <div class="top">
-          <div class="left" v-for="(item, idx) in devicesIds" :key="idx">
-            <span @click="handleVideo(item)"  class="name row cen-center">{{ cameraConfig[item] || '未配置'}}</span>
-            <div class="video-wrap"  style="background-color: black;">
-              <video class="video-box" :ref="el => getRef(el, idx, 'video')"  width="400" height="300" autoplay></video>
-              <video class="audio-box" :ref="el => getRef(el, idx, 'audio')"  width="400" height="300" autoplay></video>
-            </div>
-          </div>
-          <div class="btns">
-            <a-button type="primary" @click="callCamera" style="margin-right: 10px" >开启摄像头</a-button>
-            <!--关闭摄像头-->
-            <!-- <a-button type="primary" @click="closeCamera" style="margin-right: 10px">关闭摄像头</a-button> -->
-            <!-- <a-button type="primary" @click="photograph" style="margin-right: 10px">拍照</a-button>
-            <a-button type="primary" @click="uploadImg" style="margin-right: 10px"> 上传拍照信息 </a-button> -->
-          </div>
+
+  <a-card>
+    <a-space class="row cen-space">
+      <!-- <a-space-compact block>
+                  <a-input :style="{ width: '200px' }"  placeholder="分类id"/>
+                  <a-button type="primary">搜索</a-button>
+              </a-space-compact> -->
+      <div>
+        <!-- <a-select v-model:value="walnutCategoryValue" allowClear placeholder="核桃品种"
+          style="width: 200px;margin-right: 16px;" :options="walnutCategoryOptions"
+          @change="handleWalnutCategory"></a-select>
+        <a-select v-model:value="taskStatusValue" placeholder="运算状态" allowClear style="width: 200px"
+          :options="taskStatusOptions" @change="handleTaskStatus"></a-select> -->
+      </div>
+
+      <a-button type="primary" @click="showModal">添加价格</a-button>
+    </a-space>
+  </a-card>
+  <br />
+  <a-card>
+    <a-table :columns="columns" :data-source="data" :pagination="false">
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'action'">
+          <a-popconfirm title="是否下线线路" ok-text="是" cancel-text="否" @confirm="modifyData(record)">
+            <a-button type="link" size="small">下线</a-button>
+          </a-popconfirm>
+          <a-popconfirm title="是否恢复线路" ok-text="是" cancel-text="否" @confirm="handleDel(record)">
+            <a-button type="link" size="small"> 恢复</a-button>
+          </a-popconfirm>
+        </template>
+      </template>
+
+    </a-table>
+    <br>
+    <!-- <a-pagination v-model:current="currentPage" :total="total" @change="getData"/> -->
+    <a-space class="row cen-end">
+      <a-pagination v-model:current="currentPage" v-model:page-size="pageSize" :total="total" showSizeChanger
+        :show-total="total => `共有 ${total} 条数据`" @change="getData" />
+    </a-space>
+
+  </a-card>
+
+  <a-modal v-model:open="openAddModal" width="620px" :title="isEdit ? '编辑运营线路' : '添加运营线路'" okText="确定" cancelText="取消"
+    @ok="handleOk" @cancel="handleCancel">
+
+    <a-form ref="formRef" :model="formState" :rules="rules">
+      <a-form-item label="出发地" name="startSiteName">
+        <a-select v-model:value="formState.startSiteId" placeholder="选择出发地"
+          :options="siteOptions.map(item => ({ value: item.id, label: item.name }))" style="width: 200px;"></a-select>
+      </a-form-item>
+      <a-form-item label="目的地" name="endSiteName">
+        <a-select v-model:value="formState.endSiteId" placeholder="选择目的地"
+          :options="siteOptions.map(item => ({ value: item.id, label: item.name }))" style="width: 200px;"></a-select>
+      </a-form-item>
+      <!-- <a-form-item label="产品类型" name="productType" style="width: 100%;">
+              <a-radio-group v-model:value="formState.productType" :options="productTypeOptions" />
+          </a-form-item> -->
+      <a-card title="拼车">
+        <a-form-item label="线下价格" name="offlinePrice">
+          <a-input-number v-model:value="formState.offlinePrice" placeholder="线下价格" :min="0">
+            <template #addonAfter>
+              元/人
+            </template>
+          </a-input-number>
+        </a-form-item>
+        <a-form-item label="线上价格" name="onlinePrice">
+          <a-input-number v-model:value="formState.onlinePrice" placeholder="线下价格" :min="0">
+            <template #addonAfter>
+              元/人
+            </template>
+          </a-input-number>
+        </a-form-item>
+        <a-form-item label="运营周期" name="p_period">
+          <a-range-picker v-model:value="formState.p_period" :format="['YYYY-MM-DD', 'YYYY-MM-DD']"
+            :placeholder="['开始日期', '结束日期']" />
+        </a-form-item>
+        <a-form-item label="运营时间" name="p_periodTime">
+          <a-time-range-picker v-model:value="formState.p_periodTime" :placeholder="['开始时间', '结束时间']" format="HH:mm"
+            :minuteStep="10" />
+        </a-form-item>
+        <a-form-item label="发车间隔时间" name="intervals">
+          <a-input-number id="inputNumber" v-model:value="formState.intervals" :min="0">
+            <template #addonAfter>
+              分钟
+            </template>
+          </a-input-number>
+        </a-form-item>
+      </a-card>
+      <a-card title="包车" style="margin-top: 20px;">
+
+        <!-- <a-form-item label="座位数" name="seats" style="width: 100%;">
+              <a-radio-group v-model:value="formState.seats" :options="plainOptions" />
+          </a-form-item> -->
+
+        <a-form-item label="五座线下价格" name="seat5OfflinePrice">
+          <a-input-number v-model:value="formState.seat5OfflinePrice" :min="0" placeholder="五座线下价格">
+            <template #addonAfter>
+              元/车
+            </template>
+          </a-input-number>
+        </a-form-item>
+        <a-form-item label="五座线上价格" name="seat5OnlinePrice">
+          <a-input-number v-model:value="formState.seat5OnlinePrice" :min="0" placeholder="五座线上价格">
+            <template #addonAfter>
+              元/车
+            </template>
+          </a-input-number>
+        </a-form-item>
+        <a-form-item label="七座线下价格" name="seat7OfflinePrice">
+          <a-input-number v-model:value="formState.seat7OfflinePrice" :min="0" placeholder="七座线下价格">
+            <template #addonAfter>
+              元/车
+            </template>
+          </a-input-number>
+        </a-form-item>
+        <a-form-item label="七座线上价格" name="seat7OnlinePrice">
+          <a-input-number v-model:value="formState.seat7OnlinePrice" :min="0" placeholder="七座线上价格">
+            <template #addonAfter>
+              元/车
+            </template>
+          </a-input-number>
+        </a-form-item>
+        <a-form-item label="运营周期" name="b_period">
+          <a-range-picker v-model:value="formState.b_period" :format="['YYYY-MM-DD', 'YYYY-MM-DD']"
+            :placeholder="['开始日期', '结束日期']" />
+        </a-form-item>
+        <a-form-item label="运营时间" name="b_periodTime">
+          <a-time-range-picker v-model:value="formState.b_periodTime" :placeholder="['开始时间', '结束时间']" format="HH:mm"
+            :minuteStep="10" />
+        </a-form-item>
+      </a-card>
+
+      <a-form-item label="" name="saleHoursLater" style="margin-top: 20px;">
+        <div class="row cen-start" style="gap:5px">
+          仅卖 <a-input-number id="inputNumber" v-model:value="formState.saleHoursLater" :min="1" :max="10" />
+          小时以外的票
         </div>
-      <!-- </a-col> -->
-      <!-- <a-col :span="12">
 
-        <div class="top">
-          <div class="left" v-for="(item, idx) in devicesIds" :key="idx">
-            <h1>照片{{ idx }}</h1>
-            <div class="img-wrap">
-              <img class="img-box" :ref="el => getRef(el, idx, 'img')" src="#" alt="" >
-            </div>
-            <canvas :ref="el => getRef(el, idx, 'canvas')" width="1000" height="750"
-              style="background-color: black;position: absolute;top: -999px;"></canvas>
-          </div>
-        </div>
-
-      </a-col> -->
-
-    </a-row>
-    <a-modal v-model:open="openConfigModal" :width="320" title="摄像头配置" okText="确定" cancelText="取消"
-    @ok="handleOk" @cancel="openConfigModal = false">
-        <a-select v-model:value="directionValue" style="width: 100%;margin: 20px 0;" allowClear placeholder="摄像头位置"
-          :options="directionOptions"
-          ></a-select>
+      </a-form-item>
+    </a-form>
   </a-modal>
-  </div>
 </template>
+
 <script setup>
-import { onMounted } from 'vue';
-import { ref } from 'vue';
+import gpMap from '@/components/gpMap/index.vue'
+import { onMounted, ref, reactive, toRaw } from 'vue';
 import * as api from '@/common/index'
 import { message } from 'ant-design-vue';
+import { useRoute, useRouter } from 'vue-router';
+import { min } from 'lodash-es';
+const activeKey = ref('1');
+const router = useRouter()
+const plainOptions = [{ label: '5 座', value: 5 },
+{ label: '7 座', value: 7 },];
+const productTypeOptions = [{ label: '拼车', value: '1' },
+{ label: '包车', value: '2' },];
+const env = import.meta.env
+const openAddModal = ref(false);
+const data = ref([])
+const isEdit = ref(false)
+const formRef = ref(null);
+const currentId = ref('')
+const currentPage = ref(1)
+const pageSize = ref(5)
+const total = ref(0)
+const labelCol = {
+  span: 4,
+};
+const wrapperCol = {
+  span: 24,
+};
+const siteOptions = ref([])
+const formState = reactive({
+  lineName: '1-2',//线路名称
+  startSiteId: 1,// 出发地id
+  startSiteName: '1',// 出发地名称
+  endSiteId: 2,// 目的地id
+  endSiteName: '2',// 目的地
 
-const openConfigModal = ref(false);
+  intervals: 10, // 拼车间隔多久发车(单位:分钟) 
+  offlinePrice: 20, // 拼车线下价格
+  onlinePrice: 200, // 拼车线下价格
+  p_period: [], // 拼车运营周期 
+  p_periodTime: [], // 开始时间 - 结束时间
 
-const directionOptions = ref([
-  {
-    value:'上',
-    label: '上',
-    disabled:false
-  },
-  {
-    value:'下',
-    label: '下',
-    disabled:false
+  seat5OfflinePrice: undefined, // 五座线下价格
+  seat5OnlinePrice: undefined,// 五座线上价格
+  seat7OfflinePrice: undefined, // 七座座线下价格
+  seat7OnlinePrice: undefined,// 七座线上价格
+  b_period: [], // 包车运营周期 
+  b_periodTime: [], // 开始时间 - 结束时间
 
-  },
-  {
-    value:'面A',
-    label: '面A',
-    disabled:false
+  saleHoursLater: 1, // 仅卖几小时后的票
+});
 
-  },
-  {
-    value:'面B',
-    label: '面B',
-    disabled:false
+const rules = {
+  lineName: [
+    {
+      required: true,
+      message: '请填写线路名称',
+      trigger: 'change',
+    },
+  ],
+  b_period: [
+    {
+      required: true,
+      message: '请选择包车运营周期',
+      trigger: 'change',
+    },
+  ],
+  p_period: [
+    {
+      required: true,
+      message: '请选择拼车运营周期',
+      trigger: 'change',
+    },
+  ],
+  b_periodTime: [
+    {
+      required: true,
+      message: '请选择包车运营时间',
+      trigger: 'change',
+    },
+  ],
+  p_periodTime: [
+    {
+      required: true,
+      message: '请选择拼车运营时间',
+      trigger: 'change',
+    },
+  ],
+  startSiteName: [
+    {
+      required: true,
+      message: '请选择出发地',
+      trigger: 'change',
+    },
+  ],
+  endSiteName: [
+    {
+      required: true,
+      message: '请选择目的地',
+      trigger: 'change',
+    },
+  ],
+  intervals: [
+    {
+      required: true,
+      message: '请填写发车间隔时间',
+      trigger: 'change',
+    },
+  ],
 
-  },
-  {
-    value:'肚A',
-    label: '肚A',
-    disabled:false
-
-  },
-  {
-    value:'肚B',
-    label: '肚B',
-    disabled:false
-  },
-])
-
-const cameraIds = [
-  {
-    title:'肚A',
-    id:"66212a9ae30fb30aef2979ae6f44848a27d7a5c5c033a66bd412f0a8e3e8a5a1"
-  },
-  {
-    title:'肚B',
-    id:"d851ddade5f91062b1f266f16adbc1af7bce47200aab00e3c3dc8210ccb7dba9"
-  },
-  {
-    title:'面A',
-    id:"66212a9ae30fb30aef2979ae6f44848a27d7a5c5c033a66bd412f0a8e3e8a5a1"
-  },
-  {
-    title:'顶',
-    id:"40e8a2cdbda307f39ae19eb9135fd43ff7ea863f2c6c74b738379be02937de92"
-  },
-  {
-    title:'底',
-    id:"b6b1343907cfe20a983c9d7bd4555aa410cc07a53080a8cf07a4f8c05257efd0"
-  },
-  {
-    title:'面B',
-    id:"acb038812779ab6ff52b72b5c78105cbd33100b281e642608d9f7e8cb8141a7e"
-  },
-  {
-    title:'左',
-    id:"888d4105bca1843d3f426bbff8f1d155a769d6d4ac7a47b5a83652edbc77d15b"
-  },
-]
-const directionValue = ref(undefined)
-const cameraConfig = ref({})
-const currentDeviceId =ref('')
-
-
-const videoRefList = ref([])
-const audioRefList = ref([])
-const canvasRefList = ref([])
-const imgRefList = ref([])
-let loading = false
-let devicesIds = ref([])//摄像头数组
- 
-
-cameraConfig.value = JSON.parse(localStorage.getItem('cameraConfig')) || {}
-
-
-
-onMounted(() => {
-  init();
-  setTimeout(() => {
-    callCamera()
-  }, 3000)
-
-
-  
-})
-//
-
-const fileList = ref([]);
-
-
-
-const uploadImg = () => {
-
-  // 将所有待上传的文件加入formData
-  const formData = new FormData();
-  fileList.value.forEach((file) => {
-    formData.append('files', file, file.name);
-  });
-  console.log('[ formData ]-59', formData);
-  api.uploadImgBatch(
-    formData
-    , {
-      'Content-Type': 'multipart/form-data'
-    }).then(res => {
-      console.log('[ res ]-61', res);
-      message.success(` file uploaded successfully`);
-      fileList.value = []
-      imgRefList.value.forEach(el=>{
-        el.src='#'
-      })
-    }).catch(err => {
-      message.error(` file uploaded fail`);
-
-    })
 
 };
+const columns = [
+  {
+    title: '线路编号',
+    dataIndex: 'lineId',
+    key: 'lineId',
+  },
+  {
+    title: '线路名称',
+    dataIndex: 'lineName',
+    key: 'lineName',
+  },
+  {
+    title: '出发地',
+    dataIndex: 'createTime',
+    key: 'createTime',
+  },
+  {
+    title: '目的地',
+    dataIndex: 'createTime',
+    key: 'createTime',
+  },
+  {
+    title: '拼车价格',
+    dataIndex: 'createTime',
+    key: 'createTime',
+  },
+  {
+    title: '发车周期',
+    dataIndex: 'remark',
+    key: 'remark',
+  },
+  {
+    title: '发车时间',
+    dataIndex: 'remark',
+    key: 'remark',
+  },
+  {
+    title: '到达时间',
+    dataIndex: 'remark',
+    key: 'remark',
+  },
+  {
+    title: '包车价格',
+    dataIndex: 'price',
+    key: 'price',
+  },
+  {
+    title: '售几个小时以外的票',
+    dataIndex: 'saleHoursLater',
+    key: 'saleHoursLater',
+  },
+  {
+    title: '操作',
+    key: 'action',
+  },
+];
+const getData = () => {
+  api.getLineList({
+    currentPage: currentPage.value,
+    pageSize: pageSize.value
+  }).then(res => {
+    console.log('[ res ]-17', res);
+    if (res.code == 200) {
 
+      data.value = res.data.lineproductList
+      total.value = res.data.total
 
-
-const getRef = (el, idx, source) => {
-  if (el) {
-    if (source == 'video') {
-      videoRefList.value.push(el)
     }
-    if (source == 'audio') {
-      audioRefList.value.push(el)
-    }
-    if (source == 'img') {
-      imgRefList.value.push(el)
-    }
-    if (source == 'canvas') {
-      canvasRefList.value.push(el)
-    }
-  }
+  })
 }
 
-const init = async () => {
-  try {
-    let devices = await navigator.mediaDevices.enumerateDevices();
-    console.log('devices: ', devices);
-    devices.forEach((device) => {
-      if (device.label.indexOf('RGB') != -1 && device.kind === 'videoinput') {
-        devicesIds.value.push(device.deviceId);
-      }
+const resetForm = () => {
+  formState.name = ''
+  formState.remark = ''
+  formRef.value.resetFields();
+};
+
+onMounted(() => {
+  getData()
+  api.getSiteList({
+    pageNum: 1,
+    pageSize: 1000,
+  }).then(res => {
+    console.log('[ res ]-17', res);
+    if (res.code == 200) {
+      siteOptions.value = res.data.siteInfoList
+    }
+  })
+})
+const showModal = () => {
+  formState.name = ''
+  formState.remark = ''
+  isEdit.value = false
+  openAddModal.value = true;
+};
+const handleOk = e => {
+
+  formRef.value.validate().then(() => {
+
+    let fn = isEdit.value ? 'mdCategory' : 'addProductLine'
+    const startSiteName = siteOptions.value.find(item => item.id == formState.startSiteId).name
+    const endSiteName = siteOptions.value.find(item => item.id == formState.endSiteId).name
+    let data = {
+      saleHoursLater: 2,
+      siteLineDTO: {
+        name: formState.lineName,
+        startSiteId: formState.startSiteId,
+        startSiteName,
+        endSiteId: formState.endSiteId,
+        endSiteName,
+
+      },
+
+      carPoolAloneDTO: {
+        periodStart: formState.b_period[0].format('YYYY-MM-DD'),
+        periodEnd: formState.b_period[1].format('YYYY-MM-DD'),
+        seat5OfflinePrice: formState.seat5OfflinePrice,
+        seat5OnlinePrice: formState.seat5OnlinePrice,
+        seat7OfflinePrice: formState.seat7OfflinePrice,
+        seat7OnlinePrice: formState.seat7OnlinePrice,
+        // timeStart: formState.b_periodTime[0].format('HH:mm'),
+        // timeEnd: formState.b_periodTime[1].format('HH:mm')
+        timeStart: 10,
+        timeEnd: 20
+      },
+
+      carPoolDTO: {
+        intervals: formState.intervals,
+        offlinePrice: formState.offlinePrice,
+        onlinePrice: formState.onlinePrice,
+        periodStart: formState.p_period[0].format('YYYY-MM-DD'),
+        periodEnd: formState.p_period[1].format('YYYY-MM-DD'),
+        // timeStart: formState.p_periodTime[0].format('HH:mm'),
+        // timeEnd: formState.p_periodTime[1].format('HH:mm')
+        timeStart: 10,
+        timeEnd: 20
+      },
+
+
+    }
+    if (isEdit.value) {
+      data.id = currentId.value
+    }
+
+    console.log('data: ', data);
+    api[fn]({
+      ...data
+    }).then(res => {
+      console.log('[ res ]-188', res);
+      if (res.code == '0')
+
+        message.success(`${isEdit.value ? '修改成功' : '新建成功'}`);
+      resetForm()
+
+      openAddModal.value = false
+
+      getData()
+    })
+
+
+  })
+    .catch(error => {
+      console.log('error', error);
     });
-  } catch (error) {
-    console.log('error: ', error);
+};
 
-  }
-
-
+const handleCancel = () => {
+  resetForm()
 }
 
 
-// 拍照
-const photograph = () => {
-  devicesIds.value.forEach((item, index) => {
 
 
-    let ctx = canvasRefList.value[index].getContext("2d");
-    // 把当前视频帧内容渲染到canvas上
-    ctx.drawImage(videoRefList.value[index], -260, -230, 1480 , 1110);
-    // 转base64格式、图片格式转换、图片质量压缩---支持两种格式image/jpeg+image/png
-    let imgBase64 = canvasRefList.value[index].toDataURL("image/jpeg");
-    console.log('imgBase64: ', imgBase64);
-  
-    imgRefList.value[index].src = imgBase64
-
-    /**------------到这里为止，就拿到了base64位置的地址，后面是下载功能----------*/
-
-    // 由字节转换为KB 判断大小
-    let str = imgBase64.replace("data:image/jpeg;base64,", "");
-    let strLength = str.length;
-    let fileLength = parseInt(strLength - (strLength / 8) * 2); // 图片尺寸  用于判断
-    let size = (fileLength / 1024).toFixed(2);
-    console.log(size); // 上传拍照信息  调用接口上传图片 .........
-    // 转换为Blob  
-    let blob = dataURLtoBlob(imgBase64);
-
-    // 创建一个File对象  
-    let file = new File([blob], 'captured.png', { type: 'image/png' });
-    console.log('file: ', file);
-    fileList.value.push(file)
-    // 保存到本地
-    // let ADOM = document.createElement("a");
-    // ADOM.href = imgBase64;
-    // ADOM.download = new Date().getTime() + ".jpeg";
-    // ADOM.click();
+const handleDel = (row) => {
+  console.log('[ row ]-243', row);
+  api.delCategory({ id: row.id }).then(res => {
+    console.log('[ res ]-245', res);
+    if (res.code == '0') {
+      message.success(`删除成功`);
+      getData()
+    }
   })
 }
+const modifyData = (row) => {
+  console.log('[ row ]-300', row);
+  formState.name = row.name
+  formState.remark = row.remark
+  isEdit.value = true
+  currentId.value = row.id
+  openAddModal.value = true
 
+  return
 
-
-// 开启摄像头
-const callCamera = () => {
-  console.log('devicesIds.value: ', devicesIds.value);
-  devicesIds.value.forEach((item, index) => {
-    console.log('item: ', item);
-    // navigator.mediaDevices .getUserMedia({ video: true, audio: true })
-    //     .then((stream) => {
-    //       video.srcObject = stream // 将捕获的视频流传递给video  放弃window.URL.createObjectURL(stream)的使用
-    //       video.play() //  播放视频
-    //       audio.srcObject = stream
-    //       audio.play()
-    //     })
-    // H5调用电脑摄像头API
-    navigator.mediaDevices
-      .getUserMedia({
-        video: {
-          deviceId: { exact: item },
-        },
-      })
-      .then((stream) => {
-        // console.log(success,'流')
-        // 摄像头开启成功
-        videoRefList.value[index].srcObject = stream;
-        // // 实时拍照效果
-        videoRefList.value[index].play();
-        videoRefList.value[index].srcObject = stream;
-        audioRefList.value[index].play();
-        
-      })
-      .catch((error) => {
-        console.error("摄像头开启失败，请检查摄像头是否可用！");
-      });
-  })
 
 }
-function dataURLtoBlob(dataurl) {
-  var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1];
-  var bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-  return new Blob([u8arr], { type: mime });
-}
-// 关闭摄像头
-// const closeCamera = () => {
-//   if (!this.$refs["video"].srcObject) return;
-//   let stream = this.$refs["video"].srcObject;
-//   let tracks = stream.getTracks();
-//   tracks.forEach((track) => {
-//     track.stop();
-//   });
-//   this.$refs["video"].srcObject = null;
-// }
-
-
-
-
-const handleVideo = (id)=>{
-  console.log('id: ', id);
-  openConfigModal.value = true
- 
-  currentDeviceId.value = id
-    directionValue.value  = undefined
-
-}
-
-
-const handleOk = (value)=>{
-  openConfigModal.value = false
-  // cameraConfig.value.push({
-  //   direction:directionValue.value,
-  //   deviceId:
-  // })
-  cameraConfig.value[currentDeviceId.value] = directionValue.value
-  // directionOptions.value.forEach(item=>{
-  //   console.log('item: ', item);
-  //   console.log('directionValue.value: ', directionValue.value);
-  //   if(item.value == directionValue.value){
-  //     item.disabled = true
-  //   }
-  //   // directionValue.value  = undefined
-  //   // currentDeviceId.value = undefined
-  // })
-  localStorage.setItem('cameraConfig',JSON.stringify(cameraConfig.value))
-}
-
 
 
 
 
 </script>
-<style scoped lang='scss'>
-.home {
-  width: 100%;
-  
-  .top,
-  .bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    text-align: center;
-  }
-  .video-wrap{
-    width: 300px;
-    height: 225px;
-    position: relative;
-    overflow: hidden;
 
-
-    .video-box{
-      position: absolute;
-      top: -25%;
-      left: -18%;
-      scale: 1.1;
-    }
-  }
-  .top{
-    display: grid;
-    grid-template-rows: 1fr 1fr; /* 定义2行高度各占1份 */
-    grid-template-columns: 300px 300px 300px; /* 定义2列宽度各占1份 */
-    gap: 10px; /* 设置行与行、列与列之间的间隙为10px */
-    .left{
-      position: relative;
-      .name{
-          position: absolute;
-          left: 0;
-          bottom: 0;
-          color: #fff;
-          z-index: 99999;
-          background-color: #4A5471;
-          height: 28px;
-          padding: 0 10px;
-          font-weight: 500;
-          font-size: 14px;
-          cursor: pointer;
-      }
-    }
-
-  }
-  .img-wrap{
-    background-color: black;
-    width: 300px;
-    height: 225px;
-   .img-box{
-    width: 100%;
-    /* position: absolute;
-      top: -50%;
-      left: -50%; */
-   } 
-  }
-  .btns {
-    padding: 40px 0;
-    // display: flex;
-    // align-items: center;
-    // justify-content: center;
-    text-align: left;
-  }
+<style lang="scss" scoped>
+.map-wrap {
+  margin: 20px 0;
 }
 </style>

@@ -7,12 +7,12 @@ function useRemember (options) {
 
     const checked = ref(false)
 
-    const username = localCache.get(USERNAME__LOCAL)
+    const phone = localCache.get(USERNAME__LOCAL)
     const password = localCache.get(PASSWORD__LOCAL)
-    if (username && password) {
+    if (phone && password) {
         checked.value = true
         setState({
-            username: AesDecode(username),
+            phone: AesDecode(phone),
             password: AesDecode(password)
         })
     }
@@ -24,11 +24,11 @@ function useRemember (options) {
 
     function localRemember (state) {
         if (unref(checked)) {
-            const username = localCache.get(USERNAME__LOCAL)
+            const phone = localCache.get(USERNAME__LOCAL)
             const password = localCache.get(PASSWORD__LOCAL)
-            const nextUsername = AesEncode(state.username)
+            const nextUsername = AesEncode(state.phone)
             const nextPassword = AesEncode(state.password)
-            if (username !== nextUsername && password !== nextPassword) {
+            if (phone !== nextUsername && password !== nextPassword) {
                 localCache.set(USERNAME__LOCAL, nextUsername)
                 localCache.set(PASSWORD__LOCAL, nextPassword)
             }

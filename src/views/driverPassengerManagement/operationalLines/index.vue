@@ -112,6 +112,7 @@ const resetForm = () => {
 
 onMounted(() => {
   getData()
+  return
   api.getCommonOptions({
     typeCode: 'category_task_status',
   }).then(res => {

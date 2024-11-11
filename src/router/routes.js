@@ -93,6 +93,14 @@ const routes = [
                     title: '运营线路'
                 }
             },
+            {
+                path: '/priceSetting',
+                name: 'PriceSetting',
+                component: () => import('@/views/driverPassengerManagement/priceSetting/index.vue'),
+                meta: {
+                    title: '线下目的地价格设置'
+                }
+            },
           
             {
                 path: '/driverOrder',

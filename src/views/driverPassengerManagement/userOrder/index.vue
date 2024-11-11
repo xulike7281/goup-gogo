@@ -1,18 +1,15 @@
 <template>
-
   <a-card>
     <a-space class="row cen-space">
-      <a-form :model="formState" name="horizontal_login" layout="inline" autocomplete="off" @finish="onFinish"
-        @finishFailed="onFinishFailed">
+      <a-form :model="formState" name="horizontal_login" layout="inline" autocomplete="off" @finish="getData">
         <a-form-item label="订单号" name="username">
           <a-input v-model:value="formState.name" placeholder="订单号" />
         </a-form-item>
         <a-form-item label="服务司机" name="password">
           <a-input v-model:value="formState.name" placeholder="服务司机" />
         </a-form-item>
-
         <a-form-item>
-          <a-button :disabled="disabled" type="primary" html-type="submit">搜索</a-button>
+          <a-button type="primary" html-type="submit">搜索</a-button>
         </a-form-item>
       </a-form>
 
@@ -34,154 +31,6 @@
 
     </a-table>
   </a-card>
-
-  <a-modal v-model:open="openAddModal" :width="640" :title="isEdit ? '编辑算法' : '新建算法'" okText="确定" cancelText="取消"
-    @ok="handleOk" @cancel="handleCancel">
-
-    <a-form ref="formRef" :model="formState" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-item label="配置名" name="name">
-        <a-input v-model:value="formState.name" placeholder="配置名" style="width: 50%;" />
-      </a-form-item>
-      <a-row>
-        <a-col :span='3' style="text-align: center;"><span style="font-weight: 600;">误差属性</span></a-col>
-        <a-col :span='12'></a-col>
-        <a-col :span='4' style="text-align: center;"><span style="font-weight: 600;">权重(0-30)</span></a-col>
-        <a-col :span='4' style="text-align: center;"><span style="font-weight: 600;">误差(0-1)</span></a-col>
-
-      </a-row>
-      <br>
-      <a-form-item label="肚尺寸" name="" style="width: 100%;">
-        <a-row class="w100" justify="space-between" :gutter="16">
-          <a-col :span="14">
-            <a-slider v-model:value="formState.ruleWeight.size" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleWeight.size" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleError.size" :min="0" :max="1" step="0.01" />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="边尺寸" name="" style="width: 100%;">
-        <a-row class="w100" :gutter="16">
-          <a-col :span="14">
-            <a-slider v-model:value="formState.ruleWeight.width" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleWeight.width" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleError.width" :min="0" :max="1" step="0.01" />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="高尺寸" name="" style="width: 100%;">
-        <a-row class="w100" :gutter="16">
-          <a-col :span="14">
-            <a-slider v-model:value="formState.ruleWeight.height" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleWeight.height" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleError.height" :min="0" :max="1" step="0.01" />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="顶轮廓" name="" style="width: 100%;">
-        <a-row class="w100" :gutter="16">
-          <a-col :span="14">
-            <a-slider v-model:value="formState.ruleWeight.topContour" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleWeight.topContour" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleError.topContour" :min="0" :max="1" step="0.01" />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="面轮廓" name="" style="width: 100%;">
-        <a-row class="w100" :gutter="16">
-          <a-col :span="14">
-            <a-slider v-model:value="formState.ruleWeight.widthContour" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleWeight.widthContour" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleError.widthContour" :min="0" :max="1" step="0.01" />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="肚轮廓" name="" style="width: 100%;">
-        <a-row class="w100" :gutter="16">
-          <a-col :span="14">
-            <a-slider v-model:value="formState.ruleWeight.sizeContour" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleWeight.sizeContour" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleError.sizeContour" :min="0" :max="1" step="0.01" />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="底轮廓" name="" style="width: 100%;">
-        <a-row class="w100" :gutter="16">
-          <a-col :span="14">
-            <a-slider v-model:value="formState.ruleWeight.bottomContour" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleWeight.bottomContour" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleError.bottomContour" :min="0" :max="1" step="0.01" />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="纹理" name="" style="width: 100%;">
-        <a-row class="w100" :gutter="16">
-          <a-col :span="14">
-            <a-slider v-model:value="formState.ruleWeight.texture" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleWeight.texture" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleError.texture" :min="0" :max="1" step="0.01" />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="重量" name="" style="width: 100%;">
-        <a-row class="w100" :gutter="16">
-          <a-col :span="14">
-            <a-slider v-model:value="formState.ruleWeight.weight" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleWeight.weight" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleError.weight" :min="0" :max="1" step="0.01" />
-          </a-col>
-        </a-row>
-      </a-form-item>
-      <a-form-item label="色差" name="" style="width: 100%;">
-        <a-row class="w100" :gutter="16">
-          <a-col :span="14">
-            <a-slider v-model:value="formState.ruleWeight.colorDiff" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleWeight.colorDiff" :min="0" :max="30" />
-          </a-col>
-          <a-col :span="5">
-            <a-input-number v-model:value="formState.ruleError.colorDiff" :min="0" :max="1" step="0.01" />
-          </a-col>
-        </a-row>
-      </a-form-item>
-    </a-form>
-  </a-modal>
 </template>
 
 <script setup>
@@ -223,58 +72,43 @@ const formState = ref({
 });
 
 
-const rules = {
-  name: [
-    {
-      required: true,
-      message: '请前填写算法名称',
-      trigger: 'change',
-    },
-  ],
-  info: [
-    {
-      required: true,
-      message: '请前填写算法配置',
-      trigger: 'change',
-    },
-  ],
-};
+
 const columns = [
   {
     title: 'ID',
-    dataIndex: 'name',
-    key: 'name',
+    dataIndex: 'id',
+    key: 'id',
   },
   {
     title: '订单号',
-    dataIndex: 'updateTime',
-    key: 'updateTime',
+    dataIndex: 'passengerOrderId',
+    key: 'passengerOrderId',
   },
   {
     title: '订单类型',
-    dataIndex: 'createTime',
-    key: 'createTime',
+    dataIndex: 'poolType',
+    key: 'poolType',
   },
   {
     title: '来源渠道',
-    dataIndex: 'createTime',
-    key: 'createTime',
+    dataIndex: 'poolType',
+    key: 'poolType',
   },
   {
     title: '服务状态',
-    dataIndex: 'createTime',
-    key: 'createTime',
+    dataIndex: 'status',
+    key: 'status',
   },
   {
     title: '服务司机',
-    dataIndex: 'createTime',
-    key: 'createTime',
+    dataIndex: 'driverName',
+    key: 'driverName',
   },
 
-  {
-    title: '操作',
-    key: 'action',
-  },
+  // {
+  //   title: '操作',
+  //   key: 'action',
+  // },
 ];
 
 
@@ -296,13 +130,13 @@ const resetForm = () => {
   formRef.value.resetFields();
 };
 const getData = () => {
-  api.getDriverOrder({
+  api.getPassengerOrderList({
     pageNum: 1,
     pageSize: 20,
     name: ruleName.value
   }).then(res => {
-    if (res.code == "0") {
-      data.value = res.data.list
+    if (res.code == 200) {
+      data.value = res.data
     } else {
       message.error('请求失败');
 

@@ -2,6 +2,14 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import AMapLoader from "@amap/amap-jsapi-loader";
 
+
+const props = defineProps({
+    pagetype: {
+        type: String,
+        default: '1'
+    }
+})
+
 let map = null;
 let mouseTool = null;
 const isDrawing = ref(false);
@@ -37,7 +45,7 @@ onMounted(() => {
             // map.add([polygon1, polygon2]);
             map.setFitView();
             polyEditor = new AMap.PolygonEditor(map);
-            polyEditor.addAdsorbPolygons([polygon1, polygon2]);
+            // polyEditor.addAdsorbPolygons([polygon1, polygon2]);
             polyEditor.on('add', function (data) {
                 console.log(data);
                 var polygon = data.target;
@@ -47,15 +55,15 @@ onMounted(() => {
                     polyEditor.open();
                 })
             })
-            polygon1.on('dblclick', () => {
-                polyEditor.setTarget(polygon1);
-                polyEditor.open();
-            })
-            polygon2.on('dblclick', () => {
-                polyEditor.setTarget(polygon2);
-                polyEditor.open();
-            })
-            polyEditor.setTarget(polygon2);
+            // polygon1.on('dblclick', () => {
+            //     polyEditor.setTarget(polygon1);
+            //     polyEditor.open();
+            // })
+            // polygon2.on('dblclick', () => {
+            //     polyEditor.setTarget(polygon2);
+            //     polyEditor.open();
+            // })
+            // polyEditor.setTarget(polygon2);
 
         })
 
@@ -90,10 +98,11 @@ const close = () => {
 
 <template>
     <div id="container"></div>
-    <div class="input-card" style="width: 120px">
-        <button class="btn" @click="createPolygon" style="margin-bottom: 5px">新建</button>
-        <button class="btn" @click="open" style="margin-bottom: 5px">开始编辑</button>
-        <button class="btn" @click="close">结束编辑</button>
+    <div class="input-card row" v-if="props.pagetype == '2'">
+        <a-button class="btn" size="small" type="primary" @click="createPolygon"
+            style="margin-bottom: 5px">新建</a-button>
+        <a-button class="btn" size="small" type="primary" @click="open" style="margin-bottom: 5px">开始编辑</a-button>
+        <a-button class="btn" size="small" type="primary" @click="close">结束编辑</a-button>
     </div>
 </template>
 

@@ -2,17 +2,28 @@
 
   <a-card>
     <a-space class="row cen-space">
-      <!-- <a-space-compact block>
-                  <a-input :style="{ width: '200px' }"  placeholder="分类id"/>
-                  <a-button type="primary">搜索</a-button>
-              </a-space-compact> -->
-      <div>
-        <!-- <a-select v-model:value="walnutCategoryValue" allowClear placeholder="核桃品种"
-          style="width: 200px;margin-right: 16px;" :options="walnutCategoryOptions"
-          @change="handleWalnutCategory"></a-select>
-        <a-select v-model:value="taskStatusValue" placeholder="运算状态" allowClear style="width: 200px"
-          :options="taskStatusOptions" @change="handleTaskStatus"></a-select> -->
-      </div>
+      <a-form :model="formState" class="row" style="gap: 20px;" name="horizontal_login" layout="inline"
+        autocomplete="off" @finish="getData">
+        <a-form-item label="发票状态" name="username">
+          <a-input v-model:value="formState.name" placeholder="司机编号" />
+        </a-form-item>
+        <a-form-item label="姓名" name="password">
+          <a-input v-model:value="formState.name" placeholder="姓名" />
+        </a-form-item>
+        <a-form-item label="发票抬头" name="password">
+          <a-input v-model:value="formState.name" placeholder="发票抬头" />
+        </a-form-item>
+        <a-form-item label="发票金额" name="password">
+          <a-input v-model:value="formState.name" placeholder="发票金额" />
+        </a-form-item>
+        <a-form-item label="邮箱地址" name="password">
+          <a-input v-model:value="formState.name" placeholder="邮箱地址" />
+        </a-form-item>
+
+        <a-form-item>
+          <a-button type="primary" html-type="submit">搜索</a-button>
+        </a-form-item>
+      </a-form>
 
       <a-button type="primary" @click="showModal">新建品种</a-button>
     </a-space>
@@ -99,22 +110,37 @@ const rules = {
 };
 const columns = [
   {
-    title: '品种名称',
+    title: '发票抬头',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: '修改时间',
+    title: '发票金额',
     dataIndex: 'updateTime',
     key: 'updateTime',
   },
   {
-    title: '创建时间',
+    title: '订单号',
     dataIndex: 'createTime',
     key: 'createTime',
   },
   {
-    title: '备注',
+    title: '提交开票时间',
+    dataIndex: 'remark',
+    key: 'remark',
+  },
+  {
+    title: '邮箱地址',
+    dataIndex: 'remark',
+    key: 'remark',
+  },
+  {
+    title: '开票时间',
+    dataIndex: 'remark',
+    key: 'remark',
+  },
+  {
+    title: '操作人',
     dataIndex: 'remark',
     key: 'remark',
   },
@@ -124,7 +150,7 @@ const columns = [
   },
 ];
 const getData = () => {
-  api.getCategoryList({
+  api.getInvoiceList({
     pageNum: currentPage.value,
     pageSize: pageSize.value
   }).then(res => {
@@ -149,15 +175,7 @@ const resetForm = () => {
 
 onMounted(() => {
   getData()
-  api.getCommonOptions({
-    typeCode: 'category_task_status',
-  }).then(res => {
-    if (res.code == "0") {
 
-      // data.value = res.data.list
-      console.log('[ total.value ]-152', total.value);
-    }
-  })
 
 })
 const showModal = () => {

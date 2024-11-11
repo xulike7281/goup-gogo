@@ -21,8 +21,12 @@
   <a-card>
     <a-table :columns="columns" :data-source="data" :pagination="false">
       <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'type'">
+          <div>{{ record.type == 1 ? '场站' : '区域' }}</div>
+
+        </template>
         <template v-if="column.key === 'action'">
-          <a-button type="link" size="small" @click="modifyData(record)"> 修改</a-button>
+          <a-button type="link" size="small" @click="modifyData(record)"> 编辑</a-button>
           <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="handleDel(record)">
             <a-button type="link" size="small"> 删除</a-button>
           </a-popconfirm>
@@ -39,23 +43,27 @@
 
   </a-card>
 
-  <a-modal v-model:open="openAddModal" :width="560" :title="isEdit ? '编辑围栏' : '添加围栏'" okText="确定" cancelText="取消"
+  <a-modal v-model:open="openAddModal" width="50%" :title="isEdit ? '编辑围栏' : '运营区域围栏绘制'" okText="确定" cancelText="取消"
     @ok="handleOk" @cancel="handleCancel">
-    <div class="map-wrap">
-      <gp-map></gp-map>
-    </div>
-
-    <a-form ref="formRef" :model="formState" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-item label="地址检索：" name="name">
-        <a-input v-model:value="formState.name" placeholder="品种" />
+    <a-form ref="formRef" :model="formState" :rules="rules">
+      <a-form-item label="点位类型" name="type">
+        <a-radio-group v-model:value="formState.type" name="radioGroup">
+          <a-radio value="1">场站</a-radio>
+          <a-radio value="2">区域</a-radio>
+        </a-radio-group>
       </a-form-item>
-      <a-form-item label="外显名称：" name="remark" style="width: 100%;">
-        <a-textarea v-model:value="formState.remark" :rows="2" :style="{ width: '100%' }" placeholder="备注"
-          :maxlength="60" />
+      <div class="map-wrap">
+        <gp-map :pagetype="formState.type"></gp-map>
+      </div>
+      <a-form-item label="地址检索" name="address">
+        <a-input v-model:value="formState.address" placeholder="地址检索" style="width: 200px;" />
       </a-form-item>
-      <a-form-item label="所属城市：" name="remark" style="width: 100%;">
-        <a-textarea v-model:value="formState.remark" :rows="2" :style="{ width: '100%' }" placeholder="备注"
-          :maxlength="60" />
+      <a-form-item label="外显名称" name="name">
+        <a-input v-model:value="formState.name" placeholder="外显名称" style="width: 200px;" />
+      </a-form-item>
+      <a-form-item label="所属城市" name="cityCodes" style="width: 400px;">
+        <a-select v-model:value="formState.cityCodes" placeholder="选择城市" :options="cityOptions"
+          style="width: 200px;"></a-select>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -79,51 +87,69 @@ const currentPage = ref(1)
 const pageSize = ref(5)
 const total = ref(0)
 const labelCol = {
-  span: 4,
+  span: 6,
 };
 const wrapperCol = {
-  span: 24,
+  span: 10,
 };
 
 const formState = reactive({
-  name: '',// 算法名称
-  remark: '',// 算法配置
+  type: '1',
+  address: '',
+  name: '',//
+  cityCodes: undefined,// 
 });
+
+const cityOptions = [
+  {
+    value: '010',
+    label: '北京',
+  },
+]
 
 const rules = {
   name: [
     {
       required: true,
-      message: '请前填写品种名称',
+      message: '请填写外显名称',
       trigger: 'change',
     },
   ],
-  remark: [
+  address: [
     {
-      required: false
+      required: true,
+      message: '请前填写地址',
+      trigger: 'change',
+    },
+  ],
+  cityCodes: [
+    {
+      required: true,
+      message: '请选择城市',
+      trigger: 'change',
     },
   ],
 };
 const columns = [
   {
     title: '编号',
+    dataIndex: 'id',
+    key: 'id',
+  },
+  {
+    title: '点位性质',
+    dataIndex: 'type',
+    key: 'type',
+  },
+  {
+    title: '点位名称',
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: '点位性质',
-    dataIndex: 'updateTime',
-    key: 'updateTime',
-  },
-  {
-    title: '点位名称',
-    dataIndex: 'createTime',
-    key: 'createTime',
-  },
-  {
     title: '所属城市',
-    dataIndex: 'remark',
-    key: 'remark',
+    dataIndex: 'cityNames',
+    key: 'cityNames',
   },
   {
     title: '操作',
@@ -131,17 +157,14 @@ const columns = [
   },
 ];
 const getData = () => {
-
   api.getSiteList({
     pageNum: currentPage.value,
     pageSize: pageSize.value
   }).then(res => {
     console.log('[ res ]-17', res);
-    if (res.code == "0") {
-
-      data.value = res.data.list
+    if (res.code == 200) {
+      data.value = res.data.siteInfoList
       total.value = res.data.total
-
     }
   })
 }
@@ -156,35 +179,25 @@ const resetForm = () => {
 };
 
 onMounted(() => {
+
   getData()
-  api.getCommonOptions({
-    typeCode: 'category_task_status',
-  }).then(res => {
-    // console.log('[ res ]-17', res);
-    if (res.code == "0") {
-
-      // data.value = res.data.list
-      console.log('[ total.value ]-152', total.value);
-    }
-  })
-
 })
 const showModal = () => {
   formState.name = ''
-  formState.remark = ''
   isEdit.value = false
   openAddModal.value = true;
 };
 const handleOk = e => {
-  console.log(e);
-
+  console.log('formState', formState);
   formRef.value.validate().then(() => {
-
-    let fn = isEdit.value ? 'mdCategory' : 'addCategory'
+    let fn = isEdit.value ? 'mdCategory' : 'addSite'
     let data = {
-      name: formState.name,
-      remark: formState.remark
+      ...formState,
+      type: formState.type * 1,
+      cityNames: '北京'
     }
+    console.log('data: ', data);
+
     if (isEdit.value) {
       data.id = currentId.value
     }
@@ -193,7 +206,7 @@ const handleOk = e => {
       ...data
     }).then(res => {
       console.log('[ res ]-188', res);
-      if (res.code == '0')
+      if (res.code == 200)
 
         message.success(`${isEdit.value ? '修改成功' : '新建成功'}`);
       resetForm()
@@ -247,6 +260,6 @@ const modifyData = (row) => {
 
 <style lang="scss" scoped>
 .map-wrap {
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 </style>
